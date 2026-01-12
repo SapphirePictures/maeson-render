@@ -1,0 +1,10 @@
+import axiosInstance from '../axios';
+
+export const healthCheck = async () => {
+  try {
+    const response = await axiosInstance.get('/health');
+    return response.data;
+  } catch (error) {
+    return { status: 'error', message: error.message };
+  }
+};
