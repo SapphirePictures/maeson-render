@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd \"Real Estate Agency Website\" && npm install && npm run build",
+  "outputDirectory": "Real Estate Agency Website/dist",
+  "framework": "vite",
+  "installCommand": "cd \"Real Estate Agency Website\" && npm install"
+}
