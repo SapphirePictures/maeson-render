@@ -132,7 +132,7 @@ export function Login() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col space-y-4 pt-6">
               <Button 
                 type="submit" 
                 className="w-full bg-[#0F4C5C] hover:bg-[#0d3d4a]"
