@@ -82,12 +82,12 @@ export function Register() {
             <CardDescription>Fill in your details to create a new account</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name *</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <div className="relative flex items-center">
+                    <User className="absolute left-3 h-5 w-5 text-slate-400" />
                     <Input
                       id="firstName"
                       name="firstName"
@@ -96,7 +96,7 @@ export function Register() {
                       required
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="pl-11"
                       disabled={isLoading}
                     />
                   </div>
@@ -104,8 +104,8 @@ export function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name *</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <div className="relative flex items-center">
+                    <User className="absolute left-3 h-5 w-5 text-slate-400" />
                     <Input
                       id="lastName"
                       name="lastName"
@@ -114,7 +114,7 @@ export function Register() {
                       required
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="pl-11"
                       disabled={isLoading}
                     />
                   </div>
@@ -123,8 +123,8 @@ export function Register() {
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <div className="relative flex items-center">
+                  <Mail className="absolute left-3 h-5 w-5 text-slate-400" />
                   <Input
                     id="email"
                     name="email"
@@ -133,7 +133,7 @@ export function Register() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-11"
                     disabled={isLoading}
                   />
                 </div>
@@ -141,8 +141,8 @@ export function Register() {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <div className="relative flex items-center">
+                  <Phone className="absolute left-3 h-5 w-5 text-slate-400" />
                   <Input
                     id="phone"
                     name="phone"
@@ -150,7 +150,7 @@ export function Register() {
                     placeholder="+234 800 000 0000"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-11"
                     disabled={isLoading}
                   />
                 </div>
@@ -177,8 +177,8 @@ export function Register() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="password">Password *</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3 h-5 w-5 text-slate-400" />
                     <Input
                       id="password"
                       name="password"
@@ -187,7 +187,7 @@ export function Register() {
                       required
                       value={formData.password}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="pl-11"
                       disabled={isLoading}
                     />
                   </div>
@@ -198,8 +198,8 @@ export function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3 h-5 w-5 text-slate-400" />
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -208,7 +208,7 @@ export function Register() {
                       required
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="pl-11"
                       disabled={isLoading}
                     />
                   </div>
@@ -219,7 +219,7 @@ export function Register() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col space-y-4 pt-6">
               <Button 
                 type="submit" 
                 className="w-full bg-[#0F4C5C] hover:bg-[#0d3d4a]"
