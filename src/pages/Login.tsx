@@ -89,12 +89,12 @@ export function Login() {
         </div>
 
         <Card className="shadow-2xl">
-          <CardHeader>
+          <CardHeader className="pt-8">
             <CardTitle>Login</CardTitle>
             <CardDescription>Enter your email and password to access your account</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
