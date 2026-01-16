@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PropertyCard } from '../components/PropertyCard';
 import { propertyAPI, PropertyFilters } from '../lib/api/properties';
+import { properties as mockProperties } from '../lib/data';
 import { Button } from '../components/ui/button';
 import { Search, Filter, ArrowLeft, Loader2 } from 'lucide-react';
 import { Input } from '../components/ui/input';
@@ -65,8 +66,39 @@ export function Properties() {
     queryFn: () => propertyAPI.getProperties(apiFilters),
   });
 
-  const properties = data?.data || [];
+  const apiProperties = data?.data || [];
   const totalPages = data?.pages || 1;
+
+  const parseMockPrice = (price: string) => {
+    const numeric = price.replace(/[^0-9]/g, '');
+    return numeric ? parseInt(numeric, 10) : 0;
+  };
+
+  const filteredMockProperties = mockProperties.filter((property) => {
+    if (filter === 'buy' && property.type !== 'buy') return false;
+    if (filter === 'rent' && property.type !== 'rent') return false;
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const matches = property.location.toLowerCase().includes(term) || property.title.toLowerCase().includes(term);
+      if (!matches) return false;
+    }
+
+    if (priceRange.min || priceRange.max) {
+      const priceValue = parseMockPrice(property.price);
+      if (priceRange.min && priceValue < parseInt(priceRange.min, 10)) return false;
+      if (priceRange.max && priceValue > parseInt(priceRange.max, 10)) return false;
+    }
+
+    if (bedrooms !== 'any' && property.bedrooms < parseInt(bedrooms, 10)) return false;
+    if (bathrooms !== 'any' && property.bathrooms < parseInt(bathrooms, 10)) return false;
+
+    return true;
+  });
+
+  const useMockData = isError || !data;
+  const displayProperties = useMockData ? filteredMockProperties : apiProperties;
+  const displayTotal = useMockData ? filteredMockProperties.length : (data?.total || 0);
 
   const clearFilters = () => {
     setSearchTerm(''); 
@@ -235,30 +267,13 @@ export function Properties() {
       </div>
 
       {/* Property Grid */}
-      <div>
+      <div className="container mx-auto px-4 md:px-6">
         {isLoading ? (
           <div className="text-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-[#0F4C5C] mx-auto mb-4" />
             <p className="text-slate-600">Loading properties...</p>
           </div>
-        ) : isError ? (
-          <div className="text-center py-20 bg-white rounded-lg border border-slate-100 shadow-sm">
-            <div className="flex justify-center mb-4">
-              <Search className="h-12 w-12 text-red-300" />
-            </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-2">Error loading properties</h3>
-            <p className="text-slate-500 mb-6 max-w-md mx-auto">
-              Something went wrong. Please try again later.
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.reload()}
-              className="border-[#0F4C5C] text-[#0F4C5C]"
-            >
-              Retry
-            </Button>
-          </div>
-        ) : properties.length === 0 ? (
+        ) : displayProperties.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-lg border border-slate-100 shadow-sm">
             <div className="flex justify-center mb-4">
               <Search className="h-12 w-12 text-slate-300" />
@@ -279,30 +294,34 @@ export function Properties() {
         ) : (
           <>
             <div className="mb-4 text-sm text-slate-600">
-              Showing {properties.length} of {data?.total || 0} properties
+              Showing {displayProperties.length} of {displayTotal} properties
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {properties.map((property) => (
+              {displayProperties.map((property) => (
                 <PropertyCard 
-                  key={property._id} 
-                  property={{
-                    id: property._id,
-                    title: property.title,
-                    location: `${property.address.city}, ${property.address.state}`,
-                    price: formatPrice(property.price, property.listingType),
-                    type: property.listingType === 'sale' ? 'buy' : 'rent',
-                    bedrooms: property.bedrooms || 0,
-                    bathrooms: property.bathrooms || 0,
-                    area: property.squareFeet ? `${property.squareFeet} sqft` : '',
-                    image: property.images[0]?.url || '',
-                    images: property.images.map(img => img.url),
-                    isNew: false,
-                  }} 
+                  key={useMockData ? property.id : property._id} 
+                  property={
+                    useMockData
+                      ? property
+                      : {
+                          id: property._id,
+                          title: property.title,
+                          location: `${property.address.city}, ${property.address.state}`,
+                          price: formatPrice(property.price, property.listingType),
+                          type: property.listingType === 'sale' ? 'buy' : 'rent',
+                          bedrooms: property.bedrooms || 0,
+                          bathrooms: property.bathrooms || 0,
+                          area: property.squareFeet ? `${property.squareFeet} sqft` : '',
+                          image: property.images[0]?.url || '',
+                          images: property.images.map(img => img.url),
+                          isNew: false,
+                        }
+                  } 
                 />
               ))}
             </div>
             
-            {totalPages > 1 && (
+            {!useMockData && totalPages > 1 && (
               <div className="mt-12 flex justify-center gap-2">
                 <Button 
                   variant="outline" 
