@@ -298,26 +298,27 @@ export function Properties() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {displayProperties.map((property) => (
-                <PropertyCard 
-                  key={useMockData ? property.id : property._id} 
-                  property={
-                    useMockData
-                      ? property
-                      : {
-                          id: property._id,
-                          title: property.title,
-                          location: `${property.address.city}, ${property.address.state}`,
-                          price: formatPrice(property.price, property.listingType),
-                          type: property.listingType === 'sale' ? 'buy' : 'rent',
-                          bedrooms: property.bedrooms || 0,
-                          bathrooms: property.bathrooms || 0,
-                          area: property.squareFeet ? `${property.squareFeet} sqft` : '',
-                          image: property.images[0]?.url || '',
-                          images: property.images.map(img => img.url),
-                          isNew: false,
-                        }
-                  } 
-                />
+                <div key={useMockData ? property.id : property._id} className="w-full max-w-[380px] mx-auto">
+                  <PropertyCard 
+                    property={
+                      useMockData
+                        ? property
+                        : {
+                            id: property._id,
+                            title: property.title,
+                            location: `${property.address.city}, ${property.address.state}`,
+                            price: formatPrice(property.price, property.listingType),
+                            type: property.listingType === 'sale' ? 'buy' : 'rent',
+                            bedrooms: property.bedrooms || 0,
+                            bathrooms: property.bathrooms || 0,
+                            area: property.squareFeet ? `${property.squareFeet} sqft` : '',
+                            image: property.images[0]?.url || '',
+                            images: property.images.map(img => img.url),
+                            isNew: false,
+                          }
+                    } 
+                  />
+                </div>
               ))}
             </div>
             
