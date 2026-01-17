@@ -1,13 +1,40 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { MapPin, Home, Banknote, Search, Users } from 'lucide-react';
 import heroBg from 'figma:asset/ba59cf5d0c19e2b6f128d2586fb6ebb8669fbc3d.png';
+import { locations } from '../lib/data';
 
 export function Hero() {
+  const navigate = useNavigate();
+  const [listingType, setListingType] = useState<'buy' | 'rent'>('buy');
+  const [location, setLocation] = useState('');
+  const [propertyType, setPropertyType] = useState<string>('');
+  const [budget, setBudget] = useState<string>('');
+  const [bedrooms, setBedrooms] = useState<string>('');
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (location) params.set('location', location);
+    params.set('listingType', listingType === 'buy' ? 'sale' : 'rent');
+    if (propertyType) params.set('propertyType', propertyType);
+    if (bedrooms) params.set('bedrooms', bedrooms);
+
+    if (budget === 'under-50m') {
+      params.set('maxPrice', '50000000');
+    } else if (budget === '50m-100m') {
+      params.set('minPrice', '50000000');
+      params.set('maxPrice', '100000000');
+    } else if (budget === '100m-plus') {
+      params.set('minPrice', '100000000');
+    }
+
+    navigate(`/properties?${params.toString()}`);
+  };
   return (
     <section className="relative w-full bg-[#0F4C5C] pt-20 pb-32 md:pt-32 md:pb-48 overflow-hidden">
       {/* Background Image with Overlay */}
@@ -41,7 +68,7 @@ export function Hero() {
 
         {/* Search Filter Card */}
         <div className="w-full max-w-5xl rounded-sm bg-white p-4 shadow-xl md:p-6 text-left">
-          <Tabs defaultValue="buy" className="w-full">
+          <Tabs defaultValue="buy" className="w-full" onValueChange={(value) => setListingType(value as 'buy' | 'rent')}>
             <TabsList className="mb-6 bg-slate-100 p-1">
               <TabsTrigger value="buy" className="px-8 data-[state=active]:bg-white data-[state=active]:text-[#0F4C5C] data-[state=active]:shadow-sm">Buy</TabsTrigger>
               <TabsTrigger value="rent" className="px-8 data-[state=active]:bg-white data-[state=active]:text-[#0F4C5C] data-[state=active]:shadow-sm">Rent</TabsTrigger>
@@ -52,14 +79,31 @@ export function Hero() {
                 <label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500">Location</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                  <Input placeholder="Lagos, Abuja..." className="pl-9 border-slate-200" />
+                  <Input
+                    placeholder="Lagos, Abuja..."
+                    className="pl-9 border-slate-200"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSearch();
+                      }
+                    }}
+                    list="hero-location-suggestions"
+                  />
+                  <datalist id="hero-location-suggestions">
+                    {locations.map((item) => (
+                      <option key={item} value={item} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
 
               <div className="md:col-span-3">
                 <label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500">Property Type</label>
                 <div className="relative">
-                  <Select>
+                  <Select value={propertyType} onValueChange={setPropertyType}>
                     <SelectTrigger className="pl-9 border-slate-200">
                       <Home className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                       <SelectValue placeholder="Residence" />
@@ -77,7 +121,7 @@ export function Hero() {
               <div className="md:col-span-2">
                 <label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500">Budget</label>
                 <div className="relative">
-                   <Select>
+                   <Select value={budget} onValueChange={setBudget}>
                     <SelectTrigger className="pl-9 border-slate-200">
                       <Banknote className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                       <SelectValue placeholder="Any" />
@@ -93,7 +137,7 @@ export function Hero() {
 
                <div className="md:col-span-2">
                 <label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500">Bedrooms</label>
-                 <Select>
+                 <Select value={bedrooms} onValueChange={setBedrooms}>
                     <SelectTrigger className="border-slate-200">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
@@ -108,7 +152,10 @@ export function Hero() {
               </div>
 
               <div className="md:col-span-2 flex items-end">
-                <Button className="w-full bg-[#E3B505] text-[#0F4C5C] hover:bg-[#d4a804] font-bold h-10">
+                <Button
+                  className="w-full bg-[#E3B505] text-[#0F4C5C] hover:bg-[#d4a804] font-bold h-10"
+                  onClick={handleSearch}
+                >
                   <Search className="mr-2 h-4 w-4" /> Search
                 </Button>
               </div>

@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PropertyCard } from '../components/PropertyCard';
 import { propertyAPI, PropertyFilters } from '../lib/api/properties';
-import { properties as mockProperties } from '../lib/data';
+import { properties as mockProperties, locations } from '../lib/data';
 import { Button } from '../components/ui/button';
 import { Search, Filter, ArrowLeft, Loader2 } from 'lucide-react';
 import { Input } from '../components/ui/input';
@@ -30,13 +30,19 @@ export function Properties() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const locationParam = searchParams.get('location');
+  const listingTypeParam = searchParams.get('listingType');
+  const propertyTypeParam = searchParams.get('propertyType');
+  const minPriceParam = searchParams.get('minPrice');
+  const maxPriceParam = searchParams.get('maxPrice');
+  const bedroomsParam = searchParams.get('bedrooms');
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState(locationParam || '');
   const [page, setPage] = useState(1);
+  const [propertyType, setPropertyType] = useState(propertyTypeParam || '');
   
   // Advanced filters state
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-  const [bedrooms, setBedrooms] = useState('any');
+  const [priceRange, setPriceRange] = useState({ min: minPriceParam || '', max: maxPriceParam || '' });
+  const [bedrooms, setBedrooms] = useState(bedroomsParam || 'any');
   const [bathrooms, setBathrooms] = useState('any');
 
   // Update searchTerm when URL parameter changes
@@ -44,7 +50,19 @@ export function Properties() {
     if (locationParam) {
       setSearchTerm(locationParam);
     }
-  }, [locationParam]);
+    if (listingTypeParam) {
+      setFilter(listingTypeParam === 'rent' ? 'rent' : listingTypeParam === 'sale' ? 'buy' : 'all');
+    }
+    if (propertyTypeParam) {
+      setPropertyType(propertyTypeParam);
+    }
+    if (minPriceParam || maxPriceParam) {
+      setPriceRange({ min: minPriceParam || '', max: maxPriceParam || '' });
+    }
+    if (bedroomsParam) {
+      setBedrooms(bedroomsParam);
+    }
+  }, [locationParam, listingTypeParam, propertyTypeParam, minPriceParam, maxPriceParam, bedroomsParam]);
 
   // Build API filters
   const apiFilters: PropertyFilters = {
@@ -55,6 +73,7 @@ export function Properties() {
   if (filter === 'buy') apiFilters.listingType = 'sale';
   if (filter === 'rent') apiFilters.listingType = 'rent';
   if (searchTerm) apiFilters.search = searchTerm;
+  if (propertyType) apiFilters.propertyType = propertyType;
   if (priceRange.min) apiFilters.minPrice = parseInt(priceRange.min);
   if (priceRange.max) apiFilters.maxPrice = parseInt(priceRange.max);
   if (bedrooms !== 'any') apiFilters.bedrooms = parseInt(bedrooms);
@@ -106,6 +125,7 @@ export function Properties() {
     setPriceRange({ min: '', max: '' });
     setBedrooms('any');
     setBathrooms('any');
+    setPropertyType('');
     setPage(1);
     window.history.pushState({}, '', '/properties');
   };
@@ -153,7 +173,13 @@ export function Properties() {
                 className="pl-9 bg-white" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                list="properties-location-suggestions"
               />
+              <datalist id="properties-location-suggestions">
+                {locations.map((item) => (
+                  <option key={item} value={item} />
+                ))}
+              </datalist>
             </div>
             
             <Sheet>
